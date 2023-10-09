@@ -14,3 +14,7 @@ target/
 Debug/
 Release/
 *.ipch
+/.DS_Store
+/.classpath
+/.project
+.settings/
