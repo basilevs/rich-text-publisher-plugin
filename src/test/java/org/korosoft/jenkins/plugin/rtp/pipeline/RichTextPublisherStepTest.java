@@ -26,6 +26,7 @@ public class RichTextPublisherStepTest extends Assert {
         WorkflowJob foo = j.jenkins.createProject(WorkflowJob.class, "foo");
         List<String> lines = Arrays.asList("pipeline {", "agent any", "stages {", "  stage('Example') {", "    steps {",
         		"      script { ",
+        		"      echo 'Hi!' ",
                 "      rtp stableText: '<a href=http://artifactory/rtp-test1><b>http://artifactory/rtp-test1</b>Artifact 1</a>'",
                 "      rtp stableText: '<a href=http://artifactory/rtp-test1><b>http://artifactory/rtp-test1</b>Artifact 2</a>'",
                 "      throw stuff", "}}}}}");
@@ -43,7 +44,8 @@ public class RichTextPublisherStepTest extends Assert {
         String pipelineText = lines.stream().collect(Collectors.joining("\n"));
         foo.setDefinition(new CpsFlowDefinition(pipelineText, true));
 
-        WorkflowRun w = j.assertBuildStatusSuccess(foo.scheduleBuild2(0).get());
+        WorkflowRun w = j.assertBuildStatusSuccess(foo.scheduleBuild2(0));
+        j.assertLogContains("Hi!", w);
 
         String status = w.getActions(BuildRichTextAction.class).stream().map(BuildRichTextAction::getRichText)
                 .collect(Collectors.joining("\n"));
