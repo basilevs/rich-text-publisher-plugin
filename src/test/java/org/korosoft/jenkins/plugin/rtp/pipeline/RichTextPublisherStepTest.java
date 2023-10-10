@@ -29,7 +29,7 @@ public class RichTextPublisherStepTest extends Assert {
                 "stages {",// 
                 "  stage('Example') {",// 
                 "    steps {", //
-                "        echo 'Hi!' ",
+                "        echo 'Ensure pipeline basics are injected'",
                 "    }",
                 "    post {",//
                 "      always {",//
@@ -42,7 +42,7 @@ public class RichTextPublisherStepTest extends Assert {
         foo.setDefinition(new CpsFlowDefinition(pipelineText, true));
 
         WorkflowRun w = j.assertBuildStatusSuccess(foo.scheduleBuild2(0));
-        j.assertLogContains("Hi!", w);
+        j.assertLogContains("Ensure pipeline basics are injected", w);
 
         String status = w.getActions(BuildRichTextAction.class).stream().map(BuildRichTextAction::getRichText)
                 .collect(Collectors.joining("\n"));
