@@ -24,22 +24,19 @@ public class RichTextPublisherStepTest extends Assert {
     public void accumulateStatus() throws Exception {
 
         WorkflowJob foo = j.jenkins.createProject(WorkflowJob.class, "foo");
-        List<String> lines = Arrays.asList("pipeline {", "agent any", "stages {", "  stage('Example') {", "    steps {",
-        		"      script { ",
-        		"      echo 'Hi!' ",
-                "      rtp stableText: '<a href=http://artifactory/rtp-test1><b>http://artifactory/rtp-test1</b>Artifact 1</a>'",
-                "      rtp stableText: '<a href=http://artifactory/rtp-test1><b>http://artifactory/rtp-test1</b>Artifact 2</a>'",
-                "      throw stuff", "}}}}}");
-//         lines = Arrays.asList("pipeline {",
-//                "      rtp stableText: '<a href=http://artifactory/rtp-test1><b>http://artifactory/rtp-test1</b>Artifact 1</a>'",
-//                "      rtp stableText: '<a href=http://artifactory/rtp-test1><b>http://artifactory/rtp-test1</b>Artifact 2</a>'",
-//                "}");
-//         lines = Arrays.asList("",
-//                 "      rtp stableText: '<a href=http://artifactory/rtp-test1><b>http://artifactory/rtp-test1</b>Artifact 1</a>'",
-//                 "      rtp stableText: '<a href=http://artifactory/rtp-test1><b>http://artifactory/rtp-test1</b>Artifact 2</a>'",
-//                 "");
-
-//                 lines = Arrays.asList("node {}");
+        List<String> lines = Arrays.asList("pipeline {", 
+        		"agent any", // 
+        		"stages {",// 
+        		"  stage('Example') {",// 
+        		"    steps {", //
+        		"        echo 'Hi!' ",
+        		"    }",
+        		"    post {",//
+        		"      always {",//
+        		"        script { ",//
+                "        rtp stableText: '<a href=http://artifactory/rtp-test1><b>http://artifactory/rtp-test1</b>Artifact 1</a>'", //
+                "        rtp stableText: '<a href=http://artifactory/rtp-test1><b>http://artifactory/rtp-test1</b>Artifact 2</a>'", //
+                "}}}}}}");
 
         String pipelineText = lines.stream().collect(Collectors.joining("\n"));
         foo.setDefinition(new CpsFlowDefinition(pipelineText, true));
@@ -50,8 +47,8 @@ public class RichTextPublisherStepTest extends Assert {
         String status = w.getActions(BuildRichTextAction.class).stream().map(BuildRichTextAction::getRichText)
                 .collect(Collectors.joining("\n"));
         try {
-            assertTrue(status, status.contains("Artifact 1"));
-            assertTrue(status, status.contains("Artifact 2"));
+        	assertTrue("Should contain Artifact 2: " + status, status.contains("Artifact 2"));
+            assertTrue("Should contain Artifact 1: " + status, status.contains("Artifact 1"));
         } catch (AssertionError e) {
             throw new AssertionError(JenkinsRule.getLog(w), e);
         }
